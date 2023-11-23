@@ -83,6 +83,19 @@ void* display_thread(void* arg) {
     return NULL;
 }
 
+int sum(Node* first) {
+
+    Node *ptr = first;
+    int sum = 0;
+
+    for (int i = 0; i < counter - 1; i++)
+    {
+        sum += ptr->data;
+        ptr = ptr->next;
+    }
+    return sum;
+}
+
 int main(int argc, char **argv) {
     int option;
     char input[20];
@@ -105,7 +118,8 @@ int main(int argc, char **argv) {
         printf("2. Add\n");
         printf("3. Remove\n");
         printf("4. How many elements does the list have? (count)\n");
-        printf("5. Exit\n");
+        printf("5. Sum of the linked list's elements\n");
+        printf("6. Exit\n");
         printf("Enter option: ");
         scanf("%s", input);
         if (strcmp(input, "reinitialize") == 0) {
@@ -117,6 +131,9 @@ int main(int argc, char **argv) {
         }
         if (strcmp(input, "count") == 0) {
             printf("The list has %d elements\n", counter - 1);
+        }
+        if (strcmp(input, "sum") == 0) {
+            printf("The sum of the %d elements is %d\n", counter - 1, sum(first));
         }
         if (strcmp(input, "add") == 0) {
             printf("Adding\n");
