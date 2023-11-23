@@ -206,7 +206,7 @@ int main(int argc, char **argv) {
         if (strcmp(input, "max") == 0) {
             printf("The max. of the %d elements is %d \U0001F60E\n", counter - 1, max(first));
         }
-        if (strcmp(input, "search") == 0) {
+        if (strcmp(input, "search") == 0 || strcmp(input, "find") == 0) {
             scanf("%d", &key);
             if (search(first, key)) {
                 printf("%d was found \033[0;32m\u2713\033[0m\n", key); // Green checkmark for found
