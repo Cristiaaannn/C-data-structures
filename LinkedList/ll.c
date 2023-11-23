@@ -22,6 +22,9 @@ Node *last = NULL;
 
 int counter = 1;
 
+/*
+ * Initializes the linked list
+ */
 Node* initialize() {
     int nrElAtInit = 0;
 
@@ -50,7 +53,9 @@ Node* initialize() {
     }
     return first;
 }
-
+/*
+ * Displays the menu
+ */
 void displayMenu() {
     printf("Menu:\n");
     printf("Reinitialize (reinitialize)\n");
@@ -61,7 +66,9 @@ void displayMenu() {
     printf("Find an element in the linked list (search)\n");
     printf("Exit (exit)\n");
 }
-
+/*
+ * Displays the linked list on the open stream
+ */
 void display(Node* first) {
 
     FILE* fp;
@@ -84,6 +91,9 @@ void display(Node* first) {
     }
 }
 
+/*
+ * Thread function for calling display()
+ */
 void* display_thread(void* arg) {
     while (1) {
         pthread_mutex_lock(&mutex);
@@ -94,6 +104,9 @@ void* display_thread(void* arg) {
     return NULL;
 }
 
+/*
+ * Returns the sum of the linked list's elements
+ */
 int sum(Node* first) {
 
     Node *ptr = first;
@@ -106,6 +119,9 @@ int sum(Node* first) {
     return sum;
 }
 
+/*
+ * Returns the max. element of the linked list
+ */
 int max(Node* first) {
 
     Node *ptr = first;
@@ -120,6 +136,10 @@ int max(Node* first) {
     return max;
 }
 
+/*
+ * Returns 1 if the key was found in the linked list, 0 otherwise
+ * Found keys are transposed with the previous key (transposition optimization) 
+ */
 int search(Node *first, int key) {
     Node *swap = NULL, *ptr = first, *q = first;
     int found = 0;
