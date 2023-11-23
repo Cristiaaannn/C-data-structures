@@ -17,66 +17,66 @@ typedef struct Node {
     struct Node *next;
 } Node;
 
-Node *initialize() {
-    Node *first = NULL, *ptr = NULL, *new_node = NULL; 
+Node *first = NULL;
+
+int counter = 1;
+
+Node* initialize() {
     int nrElAtInit = 0;
-    printf("\nWith how many elements do you want to init the linked list? ");
+
+    Node* new_node = NULL, *ptr = NULL;
+
+    printf("\nWith how many elements do you want to init the list?: ");
     scanf("%d", &nrElAtInit);
     new_node = (Node*)malloc(sizeof(Node));
-    if (new_node ==  NULL) {
-        perror("Memory allocation error");
-    }
-    printf("\nEnter node data(int): ");
+    printf("Enter node(%d) data: ", counter++);
     scanf("%d", &new_node->data);
     new_node->next = NULL;
     first = new_node;
     ptr = first;
-    for (int i = 0; i < nrElAtInit - 1; i++) {
-        new_node = (Node *)malloc(sizeof(Node));
-        if (new_node == NULL) {
-            perror("Memory allocation error");
+    if (nrElAtInit == 1) {
+        return first;
+    } else {
+        for (int i = 0; i < nrElAtInit - 1; i++) {
+            Node *new_node = (Node *)malloc(sizeof(Node));
+            printf("Enter node(%d) data: ", counter++);
+            scanf("%d", &new_node->data);
+            new_node->next = NULL;
+            ptr->next = new_node;
+            ptr = ptr->next;
         }
-        printf("\nEnter node data(int): ");
-        scanf("%d", &new_node->data);
-        new_node->next = NULL;
-        ptr->next = new_node;
-        ptr = ptr->next;
     }
     return first;
 }
 
-void display(Node *first) {
+void display(Node* first) {
+
     FILE* fp;
 
     fp = fopen("list.txt","w");
     if (fp == NULL) {
-        perror("error opening file");
+        perror("\nerror opening file");
     }
-    
-    Node *ptr;
-    ptr = first;
-    while (ptr != NULL) {
+
+    Node *ptr = first;
+    for (int i = 0; i < counter - 1; i++) {
         fprintf(fp,"%d ", ptr->data);
-        ptr = ptr->next;
-        if (ptr != NULL) {
+        if (ptr->next != NULL) {
             fprintf(fp,"-> ");
         }
+        ptr = ptr->next;
     }
-    fprintf(fp,"\n");
     if (fclose(fp) == EOF) {
-        perror("error closing the file");
+        perror("\nerror closing file");
     }
 }
-
-    Node *first = NULL;
-
 
 void* display_thread(void* arg) {
     while (1) {
         pthread_mutex_lock(&mutex);
         display(first);
         pthread_mutex_unlock(&mutex);
-        sleep(1); // sleep for 1 second to avoid flooding the console
+        sleep(1);
     }
     return NULL;
 }
@@ -102,14 +102,19 @@ int main(int argc, char **argv) {
         printf("1. Reinitialize\n");
         printf("2. Add\n");
         printf("3. Remove\n");
-        printf("4. Exit\n");
+        printf("4. How many elements does the list have? (count)\n");
+        printf("5. Exit\n");
         printf("Enter option: ");
         scanf("%s", input);
         if (strcmp(input, "reinitialize") == 0) {
             pthread_mutex_lock(&mutex);
+            counter = 1;
             first = NULL;
             first = initialize();
             pthread_mutex_unlock(&mutex);
+        }
+        if (strcmp(input, "count") == 0) {
+            printf("The list has %d elements\n", counter - 1);
         }
         if (strcmp(input, "add") == 0) {
             printf("Adding\n");
