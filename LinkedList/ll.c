@@ -18,6 +18,7 @@ typedef struct Node {
 } Node;
 
 Node *first = NULL;
+Node *last = NULL;
 
 int counter = 1;
 
@@ -44,6 +45,7 @@ Node* initialize() {
             new_node->next = NULL;
             ptr->next = new_node;
             ptr = ptr->next;
+            last = ptr;
         }
     }
     return first;
