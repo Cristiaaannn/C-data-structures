@@ -88,12 +88,25 @@ int sum(Node* first) {
     Node *ptr = first;
     int sum = 0;
 
-    for (int i = 0; i < counter - 1; i++)
-    {
+    for (int i = 0; i < counter - 1; i++) {
         sum += ptr->data;
         ptr = ptr->next;
     }
     return sum;
+}
+
+int max(Node* first) {
+
+    Node *ptr = first;
+    int max = 0;
+
+    for (int i = 0; i < counter - 1; i++) {
+        if (ptr->data > max) {
+            max = ptr->data;
+        }
+        ptr = ptr->next;
+    }
+    return max;
 }
 
 int main(int argc, char **argv) {
@@ -134,6 +147,9 @@ int main(int argc, char **argv) {
         }
         if (strcmp(input, "sum") == 0) {
             printf("The sum of the %d elements is %d\n", counter - 1, sum(first));
+        }
+        if (strcmp(input, "max") == 0) {
+            printf("The max. of the %d elements is %d\n", counter - 1, max(first));
         }
         if (strcmp(input, "add") == 0) {
             printf("Adding\n");
