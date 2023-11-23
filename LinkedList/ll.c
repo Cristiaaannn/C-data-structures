@@ -51,6 +51,17 @@ Node* initialize() {
     return first;
 }
 
+void displayMenu() {
+    printf("Menu:\n");
+    printf("Reinitialize (reinitialize)\n");
+    printf("Add (add)\n");
+    printf("Remove (remove)\n");
+    printf("How many elements does the list have? (count)\n");
+    printf("Sum of the linked list's elements (sum)\n");
+    printf("Find an element in the linked list (search)\n");
+    printf("Exit (exit)\n");
+}
+
 void display(Node* first) {
 
     FILE* fp;
@@ -109,8 +120,34 @@ int max(Node* first) {
     return max;
 }
 
+int search(Node *first, int key) {
+    Node *swap = NULL, *ptr = first, *q = first;
+    int found = 0;
+
+    if (ptr->data == key) {
+        found = 1;
+        return found;
+    } else {
+        ptr = ptr->next;
+        for (int i = 0; i < counter - 2; i++) {
+            if (ptr->data != key) {
+                q = q->next;
+                ptr = ptr->next;
+            } else {
+                swap = (Node *)malloc(sizeof(Node));
+                swap->data = q->data;
+                q->data = ptr->data;
+                ptr->data = swap->data;
+                free(swap);
+                found = 1;
+            }
+        }
+    }
+    return found;
+}
+
 int main(int argc, char **argv) {
-    int option;
+    int option, key;
     char input[20];
 
 
@@ -125,15 +162,13 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    displayMenu();
+
     do {
-        printf("Menu:\n");
-        printf("1. Reinitialize\n");
-        printf("2. Add\n");
-        printf("3. Remove\n");
-        printf("4. How many elements does the list have? (count)\n");
-        printf("5. Sum of the linked list's elements\n");
-        printf("6. Exit\n");
-        printf("Enter option: ");
+        if (strcmp(input,"menu") == 0) {
+        displayMenu();
+        }
+        printf("Enter cmd: ");
         scanf("%s", input);
         if (strcmp(input, "reinitialize") == 0) {
             pthread_mutex_lock(&mutex);
@@ -146,10 +181,18 @@ int main(int argc, char **argv) {
             printf("The list has %d elements\n", counter - 1);
         }
         if (strcmp(input, "sum") == 0) {
-            printf("The sum of the %d elements is %d\n", counter - 1, sum(first));
+            printf("The \u03A3 of the %d elements is %d\n", counter - 1, sum(first));
         }
         if (strcmp(input, "max") == 0) {
-            printf("The max. of the %d elements is %d\n", counter - 1, max(first));
+            printf("The max. of the %d elements is %d \U0001F60E\n", counter - 1, max(first));
+        }
+        if (strcmp(input, "search") == 0) {
+            scanf("%d", &key);
+            if (search(first, key)) {
+                printf("%d was found \033[0;32m\u2713\033[0m\n", key); // Green checkmark for found
+            } else {
+                printf("%d was not found \033[0;31m\u2717\033[0m\n", key); // Red cross for not found
+            }
         }
         if (strcmp(input, "add") == 0) {
             printf("Adding\n");
@@ -158,7 +201,7 @@ int main(int argc, char **argv) {
             printf("Removing\n");
         }
         if (strcmp(input, "exit") == 0) {
-            printf("Exiting\n");
+            printf("Nice seeing you! \U0001F44B\n");
             return 0;
         }
     } while (1);
