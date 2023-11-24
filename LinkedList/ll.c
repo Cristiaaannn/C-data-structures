@@ -34,7 +34,7 @@ Node *initialize() {
     scanf("%d", &nrElAtInit);
     new_node = (Node *)malloc(sizeof(Node));
     if (new_node == NULL) {
-        perror("Error allocating memory");
+        perror("Error allocating memory\n");
         exit(EXIT_FAILURE);
     }
     printf("Enter node(%d) data: ", counter++);
@@ -48,7 +48,7 @@ Node *initialize() {
         for (int i = 0; i < nrElAtInit - 1; i++) {
             Node *new_node = malloc(sizeof(Node));
             if (new_node == NULL) {
-                perror("Error allocating memory");
+                perror("Error allocating memory\n");
                 exit(EXIT_FAILURE);
             }
             printf("Enter node(%d) data: ", counter++);
@@ -71,12 +71,16 @@ void displayMenu() {
     printf("Menu:\n");
     printf("Reinitialize (reinitialize)\n");
     printf("How many elements does the list have? (count)\n");
+    printf("Which is the max. number? (max)\n");
     printf("Sum of the linked list's elements (sum)\n");
-    printf("Find an element in the linked list (search)\n");
-    printf("Insert an element before the first (insert first / head)\n");
-    printf("Insert an element after certain pos (insert after [pos] [value]\n");
-    printf("Insert an element after certain value (insert after [value] [value-to-be-inserted]\n");
+    printf("Find an element in the linked list (searcht / find[val])\n");
+    printf("Insert an element before the first (insert first / head[val])\n");
+    printf("Insert an element after certain pos (insert after pos[pos] [value]\n");
+    printf("Insert an element after certain value (insert after val [value] [value-to-be-inserted]\n");
     printf("Delete the first element (delete head / first)\n");
+    printf("Delete an element after certain pos (delete after pos[pos])\n");
+    printf("Delete an element after certain val (delete after val[val])\n");
+    printf("Delete a certain value (delete [val])\n");
     printf("Exit (exit)\n");
 }
 /*
@@ -87,7 +91,8 @@ void display(Node *first) {
 
     fp = fopen("list.txt", "w");
     if (fp == NULL) {
-        perror("\nerror opening file");
+        perror("Error allocating memory\n");
+        exit(EXIT_FAILURE);
     }
 
     Node *ptr = first;
@@ -99,7 +104,8 @@ void display(Node *first) {
         ptr = ptr->next;
     }
     if (fclose(fp) == EOF) {
-        perror("\nerror closing file");
+        perror("Error allocating memory\n");
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -148,9 +154,31 @@ int max(Node *first) {
 
 /*
  * Returns 1 if the key was found in the linked list, 0 otherwise
- * Found keys are transposed with the previous key (transposition optimization)
  */
 int search(Node *first, int key) {
+    Node *ptr = first;
+    int found = 0;
+
+    if (ptr->data == key) {
+        found = 1;
+        return found;
+    } else {
+        ptr = ptr->next;
+        for (int i = 0; i < counter - 2; i++) {
+            if (ptr->data != key) {
+                ptr = ptr->next;
+            } else {
+                found = 1;
+            }
+        }
+    }
+    return found;
+}
+/*
+ * Returns 1 if the key was found in the linked list, 0 otherwise
+ * Found keys are transposed with the previous key (transposition optimization)
+ */
+int searcht(Node *first, int key) {
     Node *swap = NULL, *ptr = first, *q = first;
     int found = 0;
 
@@ -166,7 +194,7 @@ int search(Node *first, int key) {
             } else {
                 swap = (Node *)malloc(sizeof(Node));
                 if (swap == NULL) {
-                    perror("Error allocating memory");
+                    perror("Error allocating memory\n");
                     exit(EXIT_FAILURE);
                 }
                 swap->data = q->data;
@@ -187,7 +215,7 @@ Node *insertBeforeFirst(Node *first, int x) {
     Node *t = NULL;
     t = (Node *)malloc(sizeof(Node));
     if (t == NULL) {
-        perror("Error allocating memory");
+        perror("Error allocating memory\n");
         exit(EXIT_FAILURE);
     }
     t->data = x;
@@ -202,6 +230,11 @@ Node *insertBeforeFirst(Node *first, int x) {
  * Inserts a new node after a certain position
  */
 Node *insertAfterPos(Node *first, int pos, int x) {
+    if (pos > counter - 1) {
+        printf("\033[0;31m\u2717\033[0m %d is not a valid pos\n", pos);
+        return first;
+    }
+    
     Node *ptr = first, *t = NULL;
     
     for (int i = 0; i < pos -1; i++) {
@@ -210,13 +243,14 @@ Node *insertAfterPos(Node *first, int pos, int x) {
         
     t = (Node *)malloc(sizeof(Node));
     if (t == NULL) {
-        perror("Error allocating memory");
+        perror("Error allocating memory\n");
         exit(EXIT_FAILURE);
     }
     t->data = x;
     t->next = ptr->next;
     ptr->next = t;
     counter++;
+    printf("🚀 %d was inserted after pos %d\n", x, pos);
     return first;
 }
 
@@ -224,6 +258,10 @@ Node *insertAfterPos(Node *first, int pos, int x) {
  * Inserts a new node after a certain value
  */
 Node *insertAfterValue(Node *first, int value, int x) {
+    if ((search(first, value) == 0)) {
+        printf("\033[0;31m\u2717\033[0m %d is not in the list\n", value);
+        return first;
+    }
     Node *ptr = first, *t = NULL;
 
     for (int i = 0; i < counter - 1; i++) {
@@ -235,13 +273,14 @@ Node *insertAfterValue(Node *first, int value, int x) {
     }
         t = (Node *)malloc(sizeof(Node));
         if (t == NULL) {
-            perror("Error allocating memory");
+            perror("Error allocating memory\n");
             exit(EXIT_FAILURE);
         }
         t->data = x;
         t->next = ptr->next;
         ptr->next = t;
         counter++;
+        printf("🚀 %d was inserted after %d\n", x, value);
     return first;
 }
 
@@ -249,10 +288,90 @@ Node *insertAfterValue(Node *first, int value, int x) {
  * Deleting the first node
  */
 Node *delete_first(Node *first) {
+    if (first->next == NULL) {
+        printf("\033[0;31m\u2717\033[0m Deletion of the first element when it has only 1 element is forbidden\n");
+        return first;
+    }
     Node *ptr = first;
     first = first->next;
+    counter--;
+    printf("⤼ '%d' was deleted\n", ptr->data);
+    free(ptr);
+    return first;
+}
+
+/*
+ * Deleting after certain pos
+ */
+Node *deleteAfterPos(Node *first, int pos) {
+    if (pos > counter - 1) {
+        printf("\033[0;31m\u2717\033[0m %d is not a valid pos\n", pos);
+        return first;
+    }
+    Node *ptr = first, *q = first;
+    for (int i = 0; i < pos; i++) {
+        q = ptr;
+        ptr = ptr->next;
+    }
+    q->next = ptr->next;
+    printf("⤼ '%d' was deleted\n",ptr->data);
     free(ptr);
     counter--;
+    return first;
+}
+
+/*
+ * Deleting after certain value
+ */
+Node *deleteAfterValue(Node *first, int value) {
+    if ((search(first, value) == 0)) {
+        printf("\033[0;31m\u2717\033[0m %d is not in the list\n", value);
+        return first;
+    }
+    Node *ptr = first, *q = first;
+    for (int i = 0; i < counter - 1; i++) {
+        if (ptr->data == value) {
+            break;
+        } else {
+            q = ptr;
+            ptr = ptr->next;
+        }
+    }
+    q = ptr;
+    ptr = ptr->next;
+    q->next = ptr->next;
+    counter--;
+    printf("⤼ '%d' was deleted\n", ptr->data);
+    free(ptr);
+    return first;
+}
+/*
+ * Deleting certain value
+ */
+Node *deleteValue(Node *first, int value) {
+    if ((search(first, value) == 0)) {
+        printf("\033[0;31m\u2717\033[0m %d is not in the list\n", value);
+        return first;
+    }
+    if (first->data == 1) {
+        first = delete_first(first);
+        return first;
+    }
+
+    Node *ptr = first, *t = NULL;
+
+    for (int i = 0; i < counter - 1; i++) {
+        if (ptr->data == value) {
+            break;
+        } else {
+            t = ptr;
+            ptr = ptr->next;
+        }
+    }
+    t->next = ptr->next;
+    counter--;
+    printf("⤼ '%d' was deleted\n", ptr->data);
+    free(ptr);
     return first;
 }
 
@@ -297,8 +416,20 @@ int main(int argc, char **argv) {
             sscanf(input, "insert after val %d %d", &i, &key);
             first = insertAfterValue(first, i, key);
         }
+        if (strncmp(input, "delete after pos", 16) == 0) {
+            sscanf(input, "delete after pos %d", &key);
+            first = deleteAfterPos(first, key);
+        }
+        if (strncmp(input, "delete after val", 16) == 0) {
+            sscanf(input, "delete after val %d", &key);
+            first = deleteAfterValue(first, key);
+        }
         if (strncmp(input, "delete first", 12) == 0 || strncmp(input, "delete head", 11) == 0) {
             first = delete_first(first);
+        }
+        if (strncmp(input, "delete val", 10) == 0) {
+            sscanf(input, "delete val %d", &key);
+            first = deleteValue(first, key);
         }
         if (strcmp(input, "reinitialize") == 0) {
             pthread_mutex_lock(&mutex);
@@ -316,12 +447,12 @@ int main(int argc, char **argv) {
         if (strcmp(input, "max") == 0) {
             printf("The max. of the %d elements is %d \U0001F60E\n", counter - 1, max(first));
         }
-        if (strncmp(input, "search", 6) == 0 || strncmp(input, "find", 4) == 0) {
+        if (strncmp(input, "searcht", 7) == 0 || strncmp(input, "find", 4) == 0) {
             sscanf(input, "%*s %d", &key);  // parse the argument from the input string
-            if (search(first, key)) {
-                printf("%d was found \033[0;32m\u2713\033[0m\n", key);  // Green checkmark for found
+            if (searcht(first, key)) {
+                printf(" \033[0;32m\u2713\033[0m\n");  // Green checkmark for found
             } else {
-                printf("%d was not found \033[0;31m\u2717\033[0m\n", key);  // Red X for not found
+                printf(" \033[0;31m\u2717\033[0m\n");  // Red X for not found
             }
         }
         if (strcmp(input, "exit") == 0) {
@@ -331,11 +462,13 @@ int main(int argc, char **argv) {
             FILE *fp;
             fp = fopen("list.txt", "w");
             if (fp == NULL) {
-                perror("\nerror opening file");
+                perror("Error allocating memory\n");
+                exit(EXIT_FAILURE);
             }
             fprintf(fp, "empty");
             if (fclose(fp) == EOF) {
-                perror("\nerror closing file");
+                perror("Error allocating memory\n");
+                exit(EXIT_FAILURE);
             }
             return 0;
         }
