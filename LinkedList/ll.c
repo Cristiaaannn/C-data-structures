@@ -72,6 +72,7 @@ void displayMenu() {
     printf("Find an element in the linked list (search)\n");
     printf("Insert an element before the first (insert first / head)\n");
     printf("Insert an element after certain pos (insert after [pos] [value]\n");
+    printf("Insert an element after certain value (insert after [value] [value-to-be-inserted]\n");
     printf("Exit (exit)\n");
 }
 /*
@@ -193,6 +194,9 @@ Node *insertBeforeFirst(Node *first, int x) {
     return first;
 }
 
+/*
+ * Inserts a new node after a certain position
+ */
 Node *insertAfterPos(Node *first, int pos, int x) {
     Node *ptr = first, *t = NULL;
     
@@ -209,6 +213,31 @@ Node *insertAfterPos(Node *first, int pos, int x) {
     t->next = ptr->next;
     ptr->next = t;
     counter++;
+    return first;
+}
+
+/*
+ * Inserts a new node after a certain value
+ */
+Node *insertAfterValue(Node *first, int value, int x) {
+    Node *ptr = first, *t = NULL;
+
+    for (int i = 0; i < counter - 1; i++) {
+        if (ptr->data == value) {
+            break;
+        } else {
+            ptr = ptr->next;
+        }
+    }
+        t = (Node *)malloc(sizeof(Node));
+        if (t == NULL) {
+            perror("Error allocating memory");
+            exit(EXIT_FAILURE);
+        }
+        t->data = x;
+        t->next = ptr->next;
+        ptr->next = t;
+        counter++;
     return first;
 }
 
@@ -245,6 +274,10 @@ int main(int argc, char **argv) {
             sscanf(input, "insert after pos %d %d", &i, &key);
             first = insertAfterPos(first, i, key);
         }
+        if (strncmp(input, "insert after val", 16) == 0) {
+            sscanf(input, "insert after val %d %d", &i, &key);
+            first = insertAfterValue(first, i, key);
+        }
         if (strcmp(input, "reinitialize") == 0) {
             pthread_mutex_lock(&mutex);
             counter = 1;
@@ -256,12 +289,10 @@ int main(int argc, char **argv) {
             printf("The list has %d elements\n", counter - 1);
         }
         if (strcmp(input, "sum") == 0) {
-            printf("The \u03A3 of the %d elements is %d\n", counter - 1,
-                   sum(first));
+            printf("The ⅀ of the %d elements is %d\n", counter - 1, sum(first));
         }
         if (strcmp(input, "max") == 0) {
-            printf("The max. of the %d elements is %d \U0001F60E\n",
-                   counter - 1, max(first));
+            printf("The max. of the %d elements is %d \U0001F60E\n", counter - 1, max(first));
         }
         if (strncmp(input, "search", 6) == 0 || strncmp(input, "find", 4) == 0) {
             sscanf(input, "%*s %d", &key);  // parse the argument from the input string
