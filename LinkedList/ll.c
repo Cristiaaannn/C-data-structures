@@ -59,6 +59,9 @@ Node *initialize() {
             last = ptr;
         }
     }
+    // flush the input buffer
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) { }
     return first;
 }
 /*
@@ -73,6 +76,7 @@ void displayMenu() {
     printf("Insert an element before the first (insert first / head)\n");
     printf("Insert an element after certain pos (insert after [pos] [value]\n");
     printf("Insert an element after certain value (insert after [value] [value-to-be-inserted]\n");
+    printf("Delete the first element (delete head / first)\n");
     printf("Exit (exit)\n");
 }
 /*
@@ -241,6 +245,17 @@ Node *insertAfterValue(Node *first, int value, int x) {
     return first;
 }
 
+/*
+ * Deleting the first node
+ */
+Node *delete_first(Node *first) {
+    Node *ptr = first;
+    first = first->next;
+    free(ptr);
+    counter--;
+    return first;
+}
+
 int main(int argc, char **argv) {
     int key, i = 0;
     char input[50];
@@ -259,15 +274,19 @@ int main(int argc, char **argv) {
     displayMenu();
 
     do {
+        printf("Enter cmd: ");
+        fflush(NULL);
+        fgets(input, 50, stdin);          // read the entire line
+        input[strcspn(input, "\n")] = 0;  // remove the newline character
         if (strcmp(input, "menu") == 0) {
             displayMenu();
         }
-        printf("Enter cmd: ");
-        fgets(input, 50, stdin);          // read the entire line
-        input[strcspn(input, "\n")] = 0;  // remove the newline character
-
-        if (strncmp(input, "insert head", 11) == 0 || strncmp(input, "insert first", 12) == 0) {
+        if (strncmp(input, "insert head", 11) == 0) {
             sscanf(input, "insert head %d", &key);  // parse the argument from the input string
+            first = insertBeforeFirst(first, key);
+        }
+        if (strncmp(input, "insert first", 12) == 0) {
+            sscanf(input, "insert first %d", &key);  // parse the argument from the input string
             first = insertBeforeFirst(first, key);
         }
         if (strncmp(input, "insert after pos", 16) == 0) {
@@ -277,6 +296,9 @@ int main(int argc, char **argv) {
         if (strncmp(input, "insert after val", 16) == 0) {
             sscanf(input, "insert after val %d %d", &i, &key);
             first = insertAfterValue(first, i, key);
+        }
+        if (strncmp(input, "delete first", 12) == 0 || strncmp(input, "delete head", 11) == 0) {
+            first = delete_first(first);
         }
         if (strcmp(input, "reinitialize") == 0) {
             pthread_mutex_lock(&mutex);
@@ -303,7 +325,18 @@ int main(int argc, char **argv) {
             }
         }
         if (strcmp(input, "exit") == 0) {
+            free(first);
             printf("Nice seeing you! \U0001F44B\n");
+            // clear the file
+            FILE *fp;
+            fp = fopen("list.txt", "w");
+            if (fp == NULL) {
+                perror("\nerror opening file");
+            }
+            fprintf(fp, "empty");
+            if (fclose(fp) == EOF) {
+                perror("\nerror closing file");
+            }
             return 0;
         }
     } while (1);
