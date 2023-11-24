@@ -33,6 +33,10 @@ Node *initialize() {
     printf("\nWith how many elements do you want to init the list?: ");
     scanf("%d", &nrElAtInit);
     new_node = (Node *)malloc(sizeof(Node));
+    if (new_node == NULL) {
+        perror("Error allocating memory");
+        exit(EXIT_FAILURE);
+    }
     printf("Enter node(%d) data: ", counter++);
     scanf("%d", &new_node->data);
     new_node->next = NULL;
@@ -42,7 +46,11 @@ Node *initialize() {
         return first;
     } else {
         for (int i = 0; i < nrElAtInit - 1; i++) {
-            Node *new_node = (Node *)malloc(sizeof(Node));
+            Node *new_node = malloc(sizeof(Node));
+            if (new_node == NULL) {
+                perror("Error allocating memory");
+                exit(EXIT_FAILURE);
+            }
             printf("Enter node(%d) data: ", counter++);
             scanf("%d", &new_node->data);
             new_node->next = NULL;
@@ -59,8 +67,6 @@ Node *initialize() {
 void displayMenu() {
     printf("Menu:\n");
     printf("Reinitialize (reinitialize)\n");
-    printf("Add (add)\n");
-    printf("Remove (remove)\n");
     printf("How many elements does the list have? (count)\n");
     printf("Sum of the linked list's elements (sum)\n");
     printf("Find an element in the linked list (search)\n");
@@ -154,6 +160,10 @@ int search(Node *first, int key) {
                 ptr = ptr->next;
             } else {
                 swap = (Node *)malloc(sizeof(Node));
+                if (swap == NULL) {
+                    perror("Error allocating memory");
+                    exit(EXIT_FAILURE);
+                }
                 swap->data = q->data;
                 q->data = ptr->data;
                 ptr->data = swap->data;
@@ -171,6 +181,10 @@ int search(Node *first, int key) {
 Node *insertBeforeFirst(Node *first, int x) {
     Node *t = NULL;
     t = (Node *)malloc(sizeof(Node));
+    if (t == NULL) {
+        perror("Error allocating memory");
+        exit(EXIT_FAILURE);
+    }
     t->data = x;
     t->next = first;
     first = t;
@@ -187,6 +201,10 @@ Node *insertAfterPos(Node *first, int pos, int x) {
     }
         
     t = (Node *)malloc(sizeof(Node));
+    if (t == NULL) {
+        perror("Error allocating memory");
+        exit(EXIT_FAILURE);
+    }
     t->data = x;
     t->next = ptr->next;
     ptr->next = t;
@@ -223,8 +241,8 @@ int main(int argc, char **argv) {
             sscanf(input, "insert head %d", &key);  // parse the argument from the input string
             first = insertBeforeFirst(first, key);
         }
-        if (strncmp(input, "insert after", 12) == 0) {
-            sscanf(input, "insert after %d %d", &i, &key);
+        if (strncmp(input, "insert after pos", 16) == 0) {
+            sscanf(input, "insert after pos %d %d", &i, &key);
             first = insertAfterPos(first, i, key);
         }
         if (strcmp(input, "reinitialize") == 0) {
@@ -252,9 +270,6 @@ int main(int argc, char **argv) {
             } else {
                 printf("%d was not found \033[0;31m\u2717\033[0m\n", key);  // Red X for not found
             }
-        }
-        if (strcmp(input, "remove") == 0) {
-            printf("Removing\n");
         }
         if (strcmp(input, "exit") == 0) {
             printf("Nice seeing you! \U0001F44B\n");
