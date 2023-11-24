@@ -65,6 +65,7 @@ void displayMenu() {
     printf("Sum of the linked list's elements (sum)\n");
     printf("Find an element in the linked list (search)\n");
     printf("Insert an element before the first (insert first / head)\n");
+    printf("Insert an element after certain pos (insert after [pos] [value]\n");
     printf("Exit (exit)\n");
 }
 /*
@@ -178,6 +179,21 @@ Node *insertBeforeFirst(Node *first, int x) {
     return first;
 }
 
+Node *insertAfterPos(Node *first, int pos, int x) {
+    Node *ptr = first, *t = NULL;
+    
+    for (int i = 0; i < pos -1; i++) {
+        ptr = ptr->next;
+    }
+        
+    t = (Node *)malloc(sizeof(Node));
+    t->data = x;
+    t->next = ptr->next;
+    ptr->next = t;
+    counter++;
+    return first;
+}
+
 int main(int argc, char **argv) {
     int key, i = 0;
     char input[50];
@@ -204,9 +220,12 @@ int main(int argc, char **argv) {
         input[strcspn(input, "\n")] = 0;  // remove the newline character
 
         if (strncmp(input, "insert head", 11) == 0 || strncmp(input, "insert first", 12) == 0) {
-            sscanf(input, "insert head %d",
-                   &key);  // parse the argument from the input string
+            sscanf(input, "insert head %d", &key);  // parse the argument from the input string
             first = insertBeforeFirst(first, key);
+        }
+        if (strncmp(input, "insert after", 12) == 0) {
+            sscanf(input, "insert after %d %d", &i, &key);
+            first = insertAfterPos(first, i, key);
         }
         if (strcmp(input, "reinitialize") == 0) {
             pthread_mutex_lock(&mutex);
