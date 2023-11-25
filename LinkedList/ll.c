@@ -238,13 +238,10 @@ Node *insertAfterPos(Node *first, int pos, int x) {
         printf("\033[0;31m\u2717\033[0m %d is not a valid pos\n", pos);
         return first;
     }
-    
     Node *ptr = first, *t = NULL;
-    
     for (int i = 0; i < pos -1; i++) {
         ptr = ptr->next;
     }
-        
     t = (Node *)malloc(sizeof(Node));
     if (t == NULL) {
         perror("Error allocating memory\n");
