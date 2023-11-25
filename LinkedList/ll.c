@@ -84,6 +84,7 @@ void displayMenu() {
     printf("Delete an element after certain val (delete after val[val])\n");
     printf("Delete a certain value (delete [val])\n");
     printf("Remove duplicates (remove duplicates)\n");
+    printf("Revert the list (revert)\n");
     printf("Exit (exit)\n");
 }
 /*
@@ -438,6 +439,22 @@ void *removeDuplicates(Node *first) {
     }
 }
 
+/*
+ * Reverse the ll using sliding pointers
+*/
+Node *reverse(Node *first) {
+    Node *p = first, *q = NULL, *r = NULL;
+    while (p != NULL) {
+        r = q;
+        q = p;
+        p = p->next;
+        q->next = r;
+    }
+    first = q;
+    printf("⥀ The list was reversed\n");
+    return first;
+}
+
 int main(int argc, char **argv) {
     int key, i = 0;
     char input[50];
@@ -506,6 +523,9 @@ int main(int argc, char **argv) {
         }
         if (strcmp(input, "count") == 0) {
             printf("The list has %d elements\n", counter - 1);
+        }
+        if (strcmp(input, "revert") == 0) {
+            first = reverse(first);
         }
         if (strcmp(input, "sum") == 0) {
             printf("The ⅀ of the %d elements is %d\n", counter - 1, sum(first));
