@@ -72,6 +72,7 @@ void displayMenu() {
     printf("Reinitialize (reinitialize)\n");
     printf("How many elements does the list have? (count)\n");
     printf("Which is the max. number? (max)\n");
+    printf("Check if the linked list is sorted (check sorted)\n");
     printf("Sum of the linked list's elements (sum)\n");
     printf("Find an element in the linked list (searcht / find[val])\n");
     printf("Insert an element before the first (insert first / head[val])\n");
@@ -375,6 +376,42 @@ Node *deleteValue(Node *first, int value) {
     return first;
 }
 
+/*
+ * Checks if the linked list is sorted
+ * Returns: 1 if in ascneding, 2 if in descending, 0 if not
+ */
+int checkIfSorted(Node *first) {
+    int sorted = 1;
+    Node *ptr = first, *q = NULL;
+    q = ptr;
+    ptr = ptr->next;
+    if (q->data == ptr->data) {
+        q = ptr;
+        ptr = ptr->next;
+    }
+    if (q->data < ptr->data) {          // Ascending order
+        while (ptr->next != NULL) {
+            q = ptr;
+            ptr = ptr->next;
+            if (q->data > ptr->data) {
+                sorted = 0;
+                return sorted;
+            }
+        }
+    } else {                            // Descending order
+        sorted = 2;
+        while (ptr->next != NULL) {
+            q = ptr;
+            ptr = ptr->next;
+            if (q->data < ptr->data) {
+                sorted = 0;
+                return sorted;
+            }
+        }
+    }
+    return sorted;
+}
+
 int main(int argc, char **argv) {
     int key, i = 0;
     char input[50];
@@ -453,6 +490,22 @@ int main(int argc, char **argv) {
                 printf(" \033[0;32m\u2713\033[0m\n");  // Green checkmark for found
             } else {
                 printf(" \033[0;31m\u2717\033[0m\n");  // Red X for not found
+            }
+        }
+        if (strcmp(input, "check sorted") == 0) {
+            switch (checkIfSorted(first)) {
+                case 0:
+                    printf("The list is not sorted\n");
+                    break;
+                case 1:
+                    printf("The list is sorted in ascending order\n");
+                    break;
+                case 2:
+                    printf("The list is sorted in descending order\n");
+                    break;
+                default:
+                    printf("\033[0;31m\u2717\033[0mError: could not determine");
+                    break;
             }
         }
         if (strcmp(input, "exit") == 0) {
