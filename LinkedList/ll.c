@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -82,6 +83,7 @@ void displayMenu() {
     printf("Delete an element after certain pos (delete after pos[pos])\n");
     printf("Delete an element after certain val (delete after val[val])\n");
     printf("Delete a certain value (delete [val])\n");
+    printf("Remove duplicates (remove duplicates)\n");
     printf("Exit (exit)\n");
 }
 /*
@@ -354,7 +356,7 @@ Node *deleteValue(Node *first, int value) {
         printf("\033[0;31m\u2717\033[0m %d is not in the list\n", value);
         return first;
     }
-    if (first->data == 1) {
+    if (first->data == value) {
         first = delete_first(first);
         return first;
     }
@@ -411,6 +413,30 @@ int checkIfSorted(Node *first) {
     }
     return sorted;
 }
+/*
+ * Remove duplicates from the LL
+ */
+void *removeDuplicates(Node *first) {
+    Node *ptr = first, *q = NULL;
+    int i = 0;
+    bool* seen = (bool*)calloc(10000, sizeof(bool));
+    while (ptr->next != NULL) {
+        if (seen[ptr->data]) {
+            q->next = ptr->next;
+            printf("⤼ '%d' was deleted\n", ptr->data);
+            free(ptr);
+            counter--;
+            ptr = q->next;
+        } else {
+            seen[ptr->data] = true;
+            q = ptr;
+            ptr = ptr->next;
+        }
+    }
+    if (seen[ptr->data]) {
+        first = deleteAfterPos(first,counter-2);
+    }
+}
 
 int main(int argc, char **argv) {
     int key, i = 0;
@@ -460,6 +486,9 @@ int main(int argc, char **argv) {
         if (strncmp(input, "delete after val", 16) == 0) {
             sscanf(input, "delete after val %d", &key);
             first = deleteAfterValue(first, key);
+        }
+        if (strncmp(input, "remove duplicates", 17) == 0) {
+            removeDuplicates(first);
         }
         if (strncmp(input, "delete first", 12) == 0 || strncmp(input, "delete head", 11) == 0) {
             first = delete_first(first);
