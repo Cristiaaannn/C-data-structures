@@ -18,19 +18,22 @@ typedef struct Node {
     struct Node *next;
 } Node;
 
-Node *first = NULL;
-Node *last = NULL;
+Node *first  = NULL;
+Node *last1  = NULL;
+Node *second = NULL;
+Node *last2  = NULL;
 
-int counter = 1;
+int counter  = 1;
+int counter2 = 1;
 
 /*
  * Initializes the linked list
  */
-Node *initialize() {
+Node *initialize(Node *list) {
     int nrElAtInit = 0;
 
-    Node *new_node = NULL, *ptr = NULL;
-
+    Node *new_node = NULL, *ptr = NULL, *ptr2 = NULL;
+    if (list == first) {
     printf("\nWith how many elements do you want to init the list?: ");
     scanf("%d", &nrElAtInit);
     new_node = (Node *)malloc(sizeof(Node));
@@ -41,10 +44,10 @@ Node *initialize() {
     printf("Enter node(%d) data: ", counter++);
     scanf("%d", &new_node->data);
     new_node->next = NULL;
-    first = new_node;
-    ptr = first;
+    list = new_node;
+    ptr = list;
     if (nrElAtInit == 1) {
-        return first;
+        return list;
     } else {
         for (int i = 0; i < nrElAtInit - 1; i++) {
             Node *new_node = malloc(sizeof(Node));
@@ -57,13 +60,44 @@ Node *initialize() {
             new_node->next = NULL;
             ptr->next = new_node;
             ptr = ptr->next;
-            last = ptr;
+            last1 = ptr;
         }
+    }
+    } else if (list == second) {
+    printf("\nWith how many elements do you want to init the list?: ");
+    scanf("%d", &nrElAtInit);
+    new_node = (Node *)malloc(sizeof(Node));
+    if (new_node == NULL) {
+        perror("Error allocating memory\n");
+        exit(EXIT_FAILURE);
+    }
+    printf("Enter node(%d) data: ", counter2++);
+    scanf("%d", &new_node->data);
+    new_node->next = NULL;
+    list = new_node;
+    ptr2 = list;
+    if (nrElAtInit == 1) {
+        return list;
+    } else {
+        for (int i = 0; i < nrElAtInit - 1; i++) {
+            Node *new_node = malloc(sizeof(Node));
+            if (new_node == NULL) {
+                perror("Error allocating memory\n");
+                exit(EXIT_FAILURE);
+            }
+            printf("Enter node(%d) data: ", counter2++);
+            scanf("%d", &new_node->data);
+            new_node->next = NULL;
+            ptr2->next = new_node;
+            ptr2 = ptr2->next;
+            last2 = ptr2;
+        }
+    }
     }
     // flush the input buffer
     int c;
     while ((c = getchar()) != '\n' && c != EOF) { }
-    return first;
+    return list;
 }
 /*
  * Displays the menu
@@ -90,7 +124,7 @@ void displayMenu() {
 /*
  * Displays the linked list on the open stream
  */
-void display(Node *first) {
+void display(Node *list) {
     FILE *fp;
 
     fp = fopen("list.txt", "w");
@@ -104,8 +138,18 @@ void display(Node *first) {
         fprintf(fp, "%d ", ptr->data);
         if (ptr->next != NULL) {
             fprintf(fp, "-> ");
+        } else if (ptr->next == NULL) {
+            fprintf(fp,"\n");
         }
         ptr = ptr->next;
+    }
+    Node *ptr2 = second;
+    for (int i = 0; i < counter2 - 1; i++) {
+        fprintf(fp, "%d ", ptr2->data);
+        if (ptr2->next != NULL) {
+            fprintf(fp, "-> ");
+        }
+        ptr2 = ptr2->next;
     }
     if (fclose(fp) == EOF) {
         perror("Error allocating memory\n");
@@ -458,7 +502,7 @@ int main(int argc, char **argv) {
 
     if (first == NULL) {
         printf("\nLinked list is empty, initializing \n");
-        first = initialize();
+        first = initialize(first);
     }
 
     pthread_t thread_id;
@@ -515,7 +559,14 @@ int main(int argc, char **argv) {
             pthread_mutex_lock(&mutex);
             counter = 1;
             first = NULL;
-            first = initialize();
+            first = initialize(first);
+            pthread_mutex_unlock(&mutex);
+        }
+        if (strcmp(input, "initialize second") == 0) {
+            pthread_mutex_lock(&mutex);
+            counter2 = 1;
+            second = NULL;
+            second = initialize(second);
             pthread_mutex_unlock(&mutex);
         }
         if (strcmp(input, "count") == 0) {
@@ -556,6 +607,7 @@ int main(int argc, char **argv) {
         }
         if (strcmp(input, "exit") == 0) {
             free(first);
+            free(second);
             printf("Nice seeing you! \U0001F44B\n");
             // clear the file
             FILE *fp;
