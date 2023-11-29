@@ -106,6 +106,7 @@ void displayMenu() {
     printf("Menu:\n");
     printf("Reinitialize (reinitialize)\n");
     printf("Initialize a second list (initialize second)\n");
+    printf("Concatenate the lists (concatenate)\n");
     printf("How many elements does the list have? (count)\n");
     printf("Which is the max. number? (max)\n");
     printf("Check if the linked list is sorted (check sorted)\n");
@@ -125,7 +126,7 @@ void displayMenu() {
 /*
  * Displays the linked list on the open stream
  */
-void display(Node *list) {
+void display(Node *first) {
     FILE *fp;
 
     fp = fopen("list.txt", "w");
@@ -459,7 +460,7 @@ int checkIfSorted(Node *first) {
 /*
  * Remove duplicates from the LL
  */
-void *removeDuplicates(Node *first) {
+Node *removeDuplicates(Node *first) {
     Node *ptr = first, *q = NULL;
     int i = 0;
     bool* seen = (bool*)calloc(10000, sizeof(bool));
@@ -479,6 +480,7 @@ void *removeDuplicates(Node *first) {
     if (seen[ptr->data]) {
         first = deleteAfterPos(first,counter-2);
     }
+    return first;
 }
 
 /*
@@ -496,8 +498,26 @@ Node *reverse(Node *first) {
     printf("⥀ The list was reversed\n");
     return first;
 }
-
-
+/*
+ * Concatenates 2 linked lists
+ */
+Node *concatenate(Node *first, Node *second) {
+    int i = 0;
+    Node *ptr = first;
+    
+    while (ptr->next != NULL) {
+        ptr = ptr->next;
+    }
+    ptr->next = second;
+    while (ptr->next != NULL) {
+        i++;
+        ptr = ptr->next;
+    }
+    counter = counter + i;
+    second = NULL;
+    counter2 = 1;
+    return first;
+}
 
 int main(int argc, char **argv) {
     int key, i = 0;
@@ -572,6 +592,9 @@ int main(int argc, char **argv) {
             second = initialize(second);
             pthread_mutex_unlock(&mutex);
         }
+        if (strcmp(input, "concatenate") == 0) {
+            first = concatenate(first,second);
+        }
         if (strcmp(input, "count") == 0) {
             printf("The list has %d elements\n", counter - 1);
         }
@@ -610,6 +633,7 @@ int main(int argc, char **argv) {
         }
         if (strcmp(input, "exit") == 0) {
             free(first);
+            second = NULL;
             free(second);
             printf("Nice seeing you! \U0001F44B\n");
             // clear the file
