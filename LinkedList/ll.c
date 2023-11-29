@@ -107,6 +107,7 @@ void displayMenu() {
     printf("Reinitialize (reinitialize)\n");
     printf("Initialize a second list (initialize second)\n");
     printf("Concatenate the lists (concatenate)\n");
+    printf("Merge the lists (merge)\n");
     printf("How many elements does the list have? (count)\n");
     printf("Which is the max. number? (max)\n");
     printf("Check if the linked list is sorted (check sorted)\n");
@@ -426,9 +427,9 @@ Node *deleteValue(Node *first, int value) {
  * Checks if the linked list is sorted
  * Returns: 1 if in ascneding, 2 if in descending, 0 if not
  */
-int checkIfSorted(Node *first) {
+int checkIfSorted(Node *list) {
     int sorted = 1;
-    Node *ptr = first, *q = NULL;
+    Node *ptr = list, *q = NULL;
     q = ptr;
     ptr = ptr->next;
     if (q->data == ptr->data) {
@@ -518,6 +519,59 @@ Node *concatenate(Node *first, Node *second) {
     counter2 = 1;
     return first;
 }
+
+/*
+ * Merges 2 sorted linked lists
+ */
+Node *merge(Node *first, Node *second) {
+    int i = 0;
+    Node *ptr = second;
+    while (ptr->next != NULL) {
+        i++;
+        ptr = ptr->next;
+    }
+    counter = counter + i + 1;
+    if (checkIfSorted(first) != 1 || checkIfSorted(second) != 1) {
+        printf("\033[0;31m\u2717\033[0m Both lists must be sorted in ascending order\n");
+        return first;
+    }
+    Node *third = NULL, *last = NULL;
+    if (first->data < second->data) {
+        third = last = first;
+        first = first->next;
+        last->next = NULL;
+    } else {
+        third = last = second;
+        second = second->next;
+        last->next = NULL;
+    }
+    while (first != NULL && second != NULL) {
+        if (first->data < second->data) {
+            last->next = first;
+            last = first;
+            first = first->next;
+            last->next = NULL;
+        } else {
+            last->next = second;
+            last = second;
+            second = second->next;
+            last->next = NULL;
+        }
+    }
+    if (first != NULL) {
+        last->next = first;
+    } else {
+        last->next = second;
+    }
+    first = third;
+    second = NULL;
+    counter2 = 1;
+    return first;
+}
+
+/*
+ * Main function
+*/
 
 int main(int argc, char **argv) {
     int key, i = 0;
@@ -630,6 +684,25 @@ int main(int argc, char **argv) {
                     printf("\033[0;31m\u2717\033[0mError: could not determine");
                     break;
             }
+        }
+        if (strcmp(input, "check sorted2") == 0) {
+            switch (checkIfSorted(second)) {
+                case 0:
+                    printf("The list is not sorted\n");
+                    break;
+                case 1:
+                    printf("The list is sorted in ascending order\n");
+                    break;
+                case 2:
+                    printf("The list is sorted in descending order\n");
+                    break;
+                default:
+                    printf("\033[0;31m\u2717\033[0mError: could not determine");
+                    break;
+            }
+        }
+        if (strcmp(input, "merge") == 0) {
+            first = merge(first, second);
         }
         if (strcmp(input, "exit") == 0) {
             free(first);
