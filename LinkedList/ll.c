@@ -132,7 +132,7 @@ void display(Node *first) {
 
     fp = fopen("list.txt", "w");
     if (fp == NULL) {
-        perror("Error allocating memory\n");
+        perror("Error opening file\n");
         exit(EXIT_FAILURE);
     }
 
@@ -155,7 +155,7 @@ void display(Node *first) {
         ptr2 = ptr2->next;
     }
     if (fclose(fp) == EOF) {
-        perror("Error allocating memory\n");
+        perror("Error closing file\n");
         exit(EXIT_FAILURE);
     }
 }
@@ -572,7 +572,6 @@ Node *merge(Node *first, Node *second) {
 /*
  * Main function
 */
-
 int main(int argc, char **argv) {
     int key, i = 0;
     char input[50];
